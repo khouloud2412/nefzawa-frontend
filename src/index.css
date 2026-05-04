@@ -1,0 +1,19 @@
+/* Tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Configuration globale du body */
+body {
+  @apply  text-gray-900 overflow-x-hidden;
+  font-family: 'Noto Kufi Arabic', sans-serif; /* On changera pour une police arabe après */
+}
+
+/* Utilitaires pour gérer la direction du texte */
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="ltr"] {
+  text-align: left;
+}
