@@ -5,6 +5,7 @@ import HomePage from "./pages/HomePage";
 import NewsCategoryPage from "./pages/NewsCategoryPage";
 import ArticleDetailPage from "./pages/ArticleDetailPage";
 import NefzawaTVPage from "./pages/NefzawaTVPage";
+import AlouNefzawaPage from "./pages/AlouNefzawaPage";
 import RadioHistory from "./pages/RadioHistory";
 import RadioPresentation from "./pages/RadioPresentation";
 import MouwafakAalami from "./pages/MouwafakAalami";
@@ -33,6 +34,7 @@ function App() {
 
             {/* Pages institutionnelles et média */}
             <Route path="/nefzawa-tv" element={<NefzawaTVPage />} />
+            <Route path="/alou-nefzawa" element={<AlouNefzawaPage />} />
             <Route path="/RadioHistory" element={<RadioHistory />} />
             <Route path="/RadioPresentation" element={<RadioPresentation />} />
             <Route path="/MouwafakAalami" element={<MouwafakAalami />} />

@@ -35,9 +35,11 @@ export const NavLinks = [
   },
   {
     id: 5,
-    name: "نفزاوة تيفي",
-     path: "/nefzawa-tv",
-    
+        name: "شاهد على نفزاوة",
+        submenu: [
+      { id: 51, name: "نفزاوة تيفي", path: "/nefzawa-tv" }, 
+      { id: 52, name: "ألو نفزاوة", path: "/alou-nefzawa" },
+        ]
   },
   {
     id: 6,
