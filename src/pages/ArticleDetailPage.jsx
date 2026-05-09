@@ -2,13 +2,53 @@ import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import { getArticleBySlug, getArticlesByCategory } from '../services/api'; 
-import { Calendar, User, Share2, Check, ChevronRight, Download } from 'lucide-react';
+import { 
+  Calendar, User, Share2, Check, ChevronRight, 
+  Download, FileText, Music, Image as ImageIcon, Tag 
+} from 'lucide-react';
 
-// --- ICONES RÉSEAUX SOCIAUX (SVG Officiels) ---
+// --- 1. DICTIONNAIRES DE TRADUCTION ---
+const translations = {
+  ar: {
+    gallery: "معرض الصور", audios: "تسجيلات صوتية", docs: "وثائق وملفات", related: "المزيد في",
+    platforms: "منصاتنا الرقمية", share: "هل أعجبك المقال؟ شاركه مع أصدقائك", fb: "فيسبوك",
+    copy: "مشاركة الرابط", copied: "تم نسخ الرابط", author: "بواسطة", 
+    appTitle: "تطبيق نفزاوة", appDesc: "تابع آخر الأخبار العاجلة والبرامج المباشرة عبر تطبيقنا الرسمي.",
+    appBtn: "تحميل التطبيق", home: "الرئيسية", dir: "rtl", font: "font-arabic", textAlign: "text-right"
+  },
+  fr: {
+    gallery: "Galerie Photos", audios: "Enregistrements Audio", docs: "Documents et Fichiers", related: "Plus dans",
+    platforms: "Nos Plateformes", share: "Vous avez aimé cet article ? Partagez-le", fb: "Facebook",
+    copy: "Copier le lien", copied: "Lien copié", author: "Par",
+    appTitle: "App Nefzawa", appDesc: "Suivez l'actualité en direct via notre application mobile officielle.",
+    appBtn: "Télécharger", home: "Accueil", dir: "ltr", font: "font-latin", textAlign: "text-left"
+  },
+  en: {
+    gallery: "Photo Gallery", audios: "Audio Clips", docs: "Documents & Files", related: "More in",
+    platforms: "Our Platforms", share: "Did you like this article? Share it", fb: "Facebook",
+    copy: "Copy Link", copied: "Link copied", author: "By",
+    appTitle: "Nefzawa App", appDesc: "Follow live news and programs via our official mobile app.",
+    appBtn: "Download", home: "Home", dir: "ltr", font: "font-latin", textAlign: "text-left"
+  }
+};
+
+const categoryMap = {
+  fr: { "دراسات و بحوث": "Études & Recherches", "أخبار قبلي": "Kebili News", "الأخبار الوطنية": "National News", "الأخبار العالمية": "World News", "الأخبار الرياضية": "Sports News", "عروضنا": "Our Offers" },
+  en: { "دراسات و بحوث": "Research", "أخبار قبلي": "Kebili News", "الأخبار الوطنية": "National", "الأخبار العالمية": "World" }
+};
+
+// --- 2. HELPERS ---
+const extractYoutubeId = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+};
+
+const cleanURL = (text) => text ? text.trim().replace(/\s+/g, '-') : "";
+
 const SocialIcon = ({ d, size = "w-5 h-5", colorClass = "group-hover:text-white" }) => (
-  <svg className={`${size} fill-current transition-colors duration-300 ${colorClass}`} viewBox="0 0 24 24">
-    <path d={d} />
-  </svg>
+  <svg className={`${size} fill-current transition-colors duration-300 ${colorClass}`} viewBox="0 0 24 24"><path d={d} /></svg>
 );
 
 const FB_PATH = "M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1V12h3l-.5 3h-2.5v6.8c4.56-.93 8-4.96 8-9.8z";
@@ -25,7 +65,6 @@ export default function ArticleDetailPage() {
   const [loading, setLoading] = useState(true);
   const [isCopied, setIsCopied] = useState(false);
 
-  // --- LOGIQUE DE PARTAGE ---
   const handleShare = async () => {
     try {
       if (navigator.share) {
@@ -35,7 +74,7 @@ export default function ArticleDetailPage() {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2500);
       }
-    } catch { /* Ignored */ }
+    } catch { /* ignored */ }
   };
 
   const shareToFacebook = () => {
@@ -52,162 +91,194 @@ export default function ArticleDetailPage() {
         if (articleData) {
           setArticle(articleData);
           const categoryRes = await getArticlesByCategory(articleData.category, 1, 6);
-          const filtered = (categoryRes.articles || []).filter(a => a.id !== articleData.id);
+          const filtered = (categoryRes.articles || []).filter(a => a.slug !== slug);
           setRelatedNews(filtered.slice(0, 5));
         }
-      } catch (error) {
-        console.error("Erreur:", error);
-      } finally {
-        setLoading(false);
+      } catch { 
+        setLoading(false); 
+      } finally { 
+        setLoading(false); 
       }
     };
     loadContent();
   }, [slug]);
 
-  if (loading) return <div className="py-40 text-center font-arabic text-slate-400 animate-pulse">جاري التحميل...</div>;
-  if (!article) return <div className="py-40 text-center font-arabic text-red-500">المقال غير موجود</div>;
+  if (loading) return <div className="py-40 text-center font-arabic animate-pulse text-slate-400">Loading...</div>;
+  if (!article) return <div className="py-40 text-center font-arabic">Article Not Found</div>;
 
-  const cleanURL = (text) => text.trim().replace(/\s+/g, '-');
+  // --- LOGIQUE MULTILINGUE DYNAMIQUE ---
+  const lang = (article.language === 'fr' || article.language === 'en') ? article.language : 'ar';
+  const t = translations[lang];
+  const displayCategory = categoryMap[lang]?.[article.category] || article.category;
 
   return (
-    <div className="bg-white min-h-screen pb-24 font-arabic" dir="rtl">
-      <Helmet><title>{article.title} - نفزاوة</title></Helmet>
+    <div className={`bg-white min-h-screen pb-24 ${t.font} ${t.textAlign}`} dir={t.dir}>
+      <Helmet><title>{article.title} - Nefzawa</title></Helmet>
       
       <div className="container mx-auto px-4 max-w-7xl">
-        {/* Fil d'Ariane */}
         <nav className="flex items-center gap-2 py-8 text-sm text-slate-400">
-          <Link to="/" className="hover:text-[#E00A0A] transition-colors">الرئيسية</Link>
-          <ChevronRight size={14} />
-          <Link to={`/news/${article.category}`} className="hover:text-[#E00A0A] transition-colors">{article.category}</Link>
+          <Link to="/" className="hover:text-[#E00A0A] transition-colors">{t.home}</Link>
+          <ChevronRight size={14} className={t.dir === 'rtl' ? 'rotate-180' : ''} />
+          <Link to={`/news/${article.category}`} className="hover:text-[#E00A0A] transition-colors">{displayCategory}</Link>
         </nav>
 
-        <div className="flex flex-col lg:flex-row gap-12">
+        <div className="flex flex-col lg:flex-row gap-12 text-justify">
           
-          {/* --- CONTENU PRINCIPAL --- */}
           <main className="lg:w-2/3">
-            <h1 className="text-3xl md:text-5xl font-black text-slate-900 leading-tight mb-6">{article.title}</h1>
+            <h1 className={`text-3xl md:text-5xl font-black text-slate-900 leading-tight mb-6 ${t.textAlign}`}>{article.title}</h1>
             
-            <div className="flex flex-wrap items-center gap-6 text-slate-500 text-sm mb-8 pb-6 border-b border-slate-100">
+            <div className={`flex flex-wrap items-center gap-6 text-slate-500 text-sm mb-8 pb-6 border-b border-slate-100`}>
               <div className="flex items-center gap-2">
-                <User size={16} />
-                <span className="font-bold">{article.author}</span>
+                <User size={16} /> <span>{t.author}: {article.author}</span>
               </div>
               <div className="flex items-center gap-2">
-                <Calendar size={16} />
-                <span>{article.date}</span>
+                <Calendar size={16} /> <span>{article.date}</span>
               </div>
             </div>
 
             <div className="relative mb-10 overflow-hidden rounded-3xl shadow-sm border border-slate-100 bg-slate-50">
-              <img src={article.image} alt={article.title} className="w-full h-auto max-h-[550px] object-cover" />
+              <img src={article.image} alt="" className="w-full h-auto max-h-[550px] object-cover mx-auto" />
             </div>
 
-            <div className="article-content text-lg md:text-xl text-slate-800 leading-[2.1] text-justify space-y-6 mb-16" 
-                 dangerouslySetInnerHTML={{ __html: article.content }} 
-            />
+            <div className="article-content text-lg md:text-xl text-slate-800 leading-[2.1] space-y-6 mb-12" 
+                 dangerouslySetInnerHTML={{ __html: article.content }} />
 
-            {/* --- ZONE DE PARTAGE BAS DE PAGE --- */}
+            {/* SECTIONS MULTIMÉDIA */}
+            <div className="space-y-12 mb-16">
+              {article.audios?.length > 0 && (
+                <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-sm">
+                  <h3 className={`flex items-center gap-2 font-black text-lg mb-4 text-slate-900 ${t.textAlign}`}>
+                    <Music className="text-[#E00A0A]" size={20} /> {t.audios}
+                  </h3>
+                  {article.audios.map((audio, i) => (
+                    <div key={i} className="mb-4 last:mb-0">
+                      <p className={`text-sm font-bold mb-2 ${t.textAlign}`}>{audio.title}</p>
+                      <audio controls className="w-full h-10 shadow-sm rounded-lg"><source src={audio.url} /></audio>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {article.videos?.length > 0 && (
+                <div className="space-y-6">
+                  {article.videos.map((video, i) => (
+                    <div key={i} className="rounded-3xl overflow-hidden shadow-lg bg-black aspect-video">
+                      {video.url.includes('.mp4') ? (
+                        <video controls className="w-full h-full"><source src={video.url} type="video/mp4" /></video>
+                      ) : (
+                        <iframe 
+                          className="w-full h-full"
+                          src={`https://www.youtube.com/embed/${extractYoutubeId(video.url)}`}
+                          title={video.title} frameBorder="0" allowFullScreen
+                        ></iframe>
+                      )}
+                      <div className={`bg-slate-900 p-4 text-white text-sm font-bold ${t.textAlign}`}>{video.title}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {article.gallery?.length > 0 && (
+                <div>
+                  <h3 className={`flex items-center gap-2 font-black text-lg mb-6 text-slate-900 ${t.textAlign}`}>
+                    <ImageIcon className="text-[#E00A0A]" size={20} /> {t.gallery}
+                  </h3>
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {article.gallery.map((img, i) => (
+                      <div key={i} className="aspect-square rounded-2xl overflow-hidden border border-slate-100 shadow-sm">
+                        <img src={img} alt="" className="w-full h-full object-cover hover:scale-110 transition-all duration-500" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {article.pdfs?.length > 0 && (
+                <div className="space-y-3">
+                  <h3 className={`flex items-center gap-2 font-black text-lg mb-4 text-slate-900 ${t.textAlign}`}>
+                    <FileText className="text-[#E00A0A]" size={20} /> {t.docs}
+                  </h3>
+                  {article.pdfs.map((pdf, i) => (
+                    <a key={i} href={pdf.url} target="_blank" rel="noreferrer" className="flex items-center justify-between p-5 bg-white border-2 border-dashed border-slate-200 rounded-2xl hover:border-[#E00A0A] hover:bg-red-50/30 transition-all group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center text-[#E00A0A] group-hover:bg-[#E00A0A] group-hover:text-white transition-colors">
+                          <FileText size={20} />
+                        </div>
+                        <span className="font-bold text-slate-700">{pdf.title}</span>
+                      </div>
+                      <Download size={18} className="text-slate-400" />
+                    </a>
+                  ))}
+                </div>
+              )}
+
+              {article.tags?.length > 0 && (
+                <div className={`flex flex-wrap gap-2 pt-6 border-t border-slate-100`}>
+                  <Tag size={16} className="text-slate-400 mt-1" />
+                  {article.tags.map((tag, i) => (
+                    <Link key={i} to={`/search?q=${encodeURIComponent(tag)}`} className="px-4 py-1.5 bg-slate-100 text-slate-600 rounded-full text-sm font-bold hover:bg-[#E00A0A] hover:text-white transition-all shadow-sm">#{tag}</Link>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* PARTAGE */}
             <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100">
-              <h4 className="text-xl font-bold text-slate-900 mb-6">هل أعجبك المقال؟ شاركه مع أصدقائك</h4>
+              <h4 className={`text-xl font-bold mb-6 ${t.textAlign}`}>{t.share}</h4>
               <div className="flex flex-col sm:flex-row gap-4">
-                <button 
-                  onClick={shareToFacebook}
-                  className="flex-1 flex items-center justify-center gap-3 py-4 bg-[#1877F2] text-white rounded-2xl font-bold hover:opacity-90 transition-all shadow-lg shadow-blue-200"
-                >
-                  <SocialIcon d={FB_PATH} size="w-5 h-5" />
-                  فيسبوك
+                <button onClick={shareToFacebook} className="flex-1 flex items-center justify-center gap-3 py-4 bg-[#1877F2] text-white rounded-2xl font-bold hover:opacity-90 transition-all shadow-lg shadow-blue-100">
+                  <SocialIcon d={FB_PATH} size="w-5 h-5" /> {t.fb}
                 </button>
-                <button 
-                  onClick={handleShare}
-                  className="flex-1 flex items-center justify-center gap-3 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-lg"
-                >
-                  {isCopied ? <Check size={20} className="text-green-400" /> : <Share2 size={20} />}
-                  {isCopied ? "تم نسخ الرابط" : "مشاركة الرابط"}
+                <button onClick={handleShare} className="flex-1 flex items-center justify-center gap-3 py-4 bg-slate-900 text-white rounded-2xl font-bold hover:bg-black transition-all shadow-lg">
+                  {isCopied ? <Check size={20} className="text-green-400" /> : <Share2 size={20} />} {isCopied ? t.copied : t.copy}
                 </button>
               </div>
             </div>
           </main>
 
-          {/* --- SIDEBAR --- */}
           <aside className="lg:w-1/3">
             <div className="sticky top-24 space-y-8">
-              
-              {/* Widget 1: Articles liés */}
+              {/* ARTICLES LIÉS */}
               <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
-                <h3 className="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
+                <h3 className={`flex items-center gap-3 text-xl font-black text-slate-900 mb-6 ${t.textAlign}`}>
                   <span className="w-2 h-8 bg-[#E00A0A] rounded-full"></span>
-                 آخر {article.category}
+                  {t.related} {displayCategory}
                 </h3>
                 <div className="space-y-6">
                   {relatedNews.map(item => (
                     <Link key={item.id} to={`/article/${cleanURL(item.category)}/${item.slug}`} className="flex gap-4 group">
                       <div className="w-24 h-20 rounded-xl overflow-hidden flex-shrink-0 bg-slate-100 shadow-inner">
-                        <img src={item.image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                        <img src={item.image} alt="" className="w-full h-full object-cover group-hover:scale-110 transition-all" />
                       </div>
-                      <h4 className="text-sm font-bold text-slate-800 group-hover:text-[#E00A0A] transition-colors line-clamp-2 leading-snug">{item.title}</h4>
+                      <h4 className={`text-sm font-bold text-slate-800 group-hover:text-[#E00A0A] transition-colors line-clamp-2 leading-snug ${t.textAlign}`}>{item.title}</h4>
                     </Link>
                   ))}
                 </div>
               </div>
 
-              {/* Widget 2: Plateformes Numériques */}
-<div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group/widget">
-  {/* Décoration de fond discrète */}
-  <div className="absolute -top-10 -right-10 w-32 h-32 bg-slate-50 rounded-full blur-3xl group-hover/widget:bg-red-50 transition-colors duration-700"></div>
-
-  <h3 className="text-xl font-black text-slate-900 mb-8 flex items-center gap-3 relative z-10">
-    <span className="w-1.5 h-6 bg-[#E00A0A] rounded-full"></span>
-    منصاتنا الرقمية
-  </h3>
-
-  <div className="grid grid-cols-3 gap-4 relative z-10">
-    {/* FACEBOOK */}
-    <a href="https://www.facebook.com/Nefzaawa" target="_blank" rel="noreferrer" 
-       className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-[#1877F2] hover:shadow-lg hover:shadow-blue-200 transition-all duration-300">
-      <SocialIcon d={FB_PATH} />
-    </a>
-
-    {/* INSTAGRAM */}
-    <a href="https://www.instagram.com/nefzawa_" target="_blank" rel="noreferrer" 
-       className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] hover:shadow-lg transition-all duration-300">
-      <SocialIcon d={INSTA_PATH} />
-    </a>
-
-    {/* TIKTOK */}
-    <a href="https://www.tiktok.com/@nefzawa_" target="_blank" rel="noreferrer" 
-       className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-black hover:shadow-lg transition-all duration-300">
-      <SocialIcon d={TIKTOK_PATH} />
-    </a>
-
-    {/* YOUTUBE */}
-    <a href="https://www.youtube.com/@nefzawa" target="_blank" rel="noreferrer" 
-       className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-[#FF0000] hover:shadow-lg hover:shadow-red-100 transition-all duration-300">
-      <SocialIcon d={YT_PATH} />
-    </a>
-
-    {/* LINKEDIN */}
-    <a href="https://www.linkedin.com/company/nefzawa" target="_blank" rel="noreferrer" 
-       className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-[#0A66C2] hover:shadow-lg transition-all duration-300">
-      <SocialIcon d={LINKEDIN_PATH} />
-    </a>
-
-    {/* DAILYMOTION */}
-    <a href="https://www.dailymotion.com/user/nefzawa" target="_blank" rel="noreferrer" 
-       className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-[#0062ff] hover:shadow-lg transition-all duration-300">
-      <SocialIcon d={DM_PATH} />
-    </a>
-  </div>
-</div>
-
-              {/* Widget 3: Application */}
-              <div className="bg-zinc-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
-                <Download className="absolute -bottom-4 -left-4 size-24 opacity-10 group-hover:rotate-12 transition-transform duration-700" />
-                <div className="w-12 h-12 bg-[#E00A0A] rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-red-600/20"><Download size={24} /></div>
-                <h4 className="text-2xl font-black mb-3 text-right">تطبيق نفزاوة</h4>
-                <p className="text-slate-400 text-sm mb-8 leading-relaxed text-right">تابع آخر الأخبار العاجلة والبث الإذاعي والبرامج المباشرة عبر تطبيقنا الرسمي.</p>
-                <a href="https://play.google.com/store/apps/details?id=io.nefzawa.starter" target="_blank" rel="noreferrer" className="inline-flex w-full justify-center py-4 bg-white text-black rounded-2xl font-black hover:bg-[#E00A0A] hover:text-white transition-all relative z-10">تحميل التطبيق</a>
+              {/* SOCIAL WIDGET DÉCORÉ */}
+              <div className="bg-white p-8 rounded-[2.5rem] border border-slate-100 shadow-sm overflow-hidden relative group/widget">
+                <div className="absolute -top-10 -right-10 w-32 h-32 bg-slate-50 rounded-full blur-3xl group-hover/widget:bg-red-50 transition-all duration-700"></div>
+                <h3 className={`text-xl font-black text-slate-900 mb-8 flex items-center gap-3 relative z-10 ${t.textAlign}`}>
+                  <span className="w-1.5 h-6 bg-[#E00A0A] rounded-full"></span> {t.platforms}
+                </h3>
+                <div className="grid grid-cols-3 gap-4 relative z-10">
+                  <a href="https://www.facebook.com/Nefzaawa" target="_blank" rel="noreferrer" className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-[#1877F2] transition-all shadow-sm"><SocialIcon d={FB_PATH} /></a>
+                  <a href="https://www.instagram.com/nefzawa_" target="_blank" rel="noreferrer" className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-gradient-to-tr from-[#f9ce34] via-[#ee2a7b] to-[#6228d7] transition-all shadow-sm"><SocialIcon d={INSTA_PATH} /></a>
+                  <a href="https://www.tiktok.com/@nefzawa_" target="_blank" rel="noreferrer" className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-black transition-all shadow-sm"><SocialIcon d={TIKTOK_PATH} /></a>
+                  <a href="https://www.youtube.com/@nefzawa" target="_blank" rel="noreferrer" className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-[#FF0000] transition-all shadow-sm"><SocialIcon d={YT_PATH} /></a>
+                  <a href="https://www.linkedin.com/company/nefzawa" target="_blank" rel="noreferrer" className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-[#0A66C2] transition-all shadow-sm"><SocialIcon d={LINKEDIN_PATH} /></a>
+                  <a href="https://www.dailymotion.com/user/nefzawa" target="_blank" rel="noreferrer" className="group aspect-square bg-slate-50 rounded-2xl flex justify-center items-center text-slate-400 hover:bg-[#0062ff] transition-all shadow-sm"><SocialIcon d={DM_PATH} /></a>
+                </div>
               </div>
 
+              {/* APP WIDGET DÉCORÉ */}
+              <div className="bg-zinc-900 p-8 rounded-[2.5rem] text-white shadow-2xl relative overflow-hidden group">
+                <div className="w-12 h-12 bg-[#E00A0A] rounded-xl flex items-center justify-center mb-6 shadow-lg shadow-red-600/20"><Download size={24} /></div>
+                <h4 className={`text-2xl font-black mb-3 ${t.textAlign}`}>{t.appTitle}</h4>
+                <p className={`text-slate-400 text-sm mb-8 leading-relaxed ${t.textAlign}`}>{t.appDesc}</p>
+                <a href="https://play.google.com/store/apps/details?id=io.nefzawa.starter" target="_blank" rel="noreferrer" className="inline-flex w-full justify-center py-4 bg-white text-black rounded-2xl font-black hover:bg-[#E00A0A] hover:text-white transition-all relative z-10">{t.appBtn}</a>
+              </div>
             </div>
           </aside>
         </div>

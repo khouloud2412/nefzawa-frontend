@@ -16,6 +16,7 @@ import LiveAudioPage from "./pages/LiveAudioPage";
 import LiveVideoPage from "./pages/LiveVideoPage";
 import HistoryPage from "./pages/HistoryPage";
 import ContactPage from "./pages/ContactPage";
+import SearchResultsPage from "./pages/SearchResultsPage";
 
 function App() {
   return (
@@ -45,6 +46,7 @@ function App() {
             <Route path="/LiveVideoPage" element={<LiveVideoPage />} />
             <Route path="/HistoryPage" element={<HistoryPage />} />
             <Route path="/ContactPage" element={<ContactPage />} />
+            <Route path="/search" element={<SearchResultsPage />} />
           </Route>
         </Routes>
       </Router>
