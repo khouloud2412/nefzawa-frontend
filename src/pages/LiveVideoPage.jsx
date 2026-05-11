@@ -4,10 +4,9 @@ import HeaderSection from '../components/common/HeaderSection';
 import { Tv, Share2, Smartphone, Download, Check, AlertCircle, Loader2 } from 'lucide-react';
 
 // --- CONFIGURATION ---
-const OFFICIAL_DOMAIN = "nefzawa.net"; 
-const TWITCH_CHANNEL = "nefzawa"; //  chaîne twitch
+const TWITCH_CHANNEL = "nefzawa"; 
 
-// ---  MÊMES SVGS  ---
+// --- SVGS ---
 const SocialIcon = ({ d }) => (
   <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d={d} /></svg>
 );
@@ -21,9 +20,10 @@ const DM_PATH = "M21.823 7.327a11.928 11.928 0 0 0-2.606-3.814 12.126 12.126 0 0
 export default function LiveVideoPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isCopied, setIsCopied] = useState(false);
-
-  // Gestion dynamique du parent Twitch selon l'environnement
-  const parentDomain = window.location.hostname === "localhost" ? "localhost" : OFFICIAL_DOMAIN;
+  
+  // LOGIQUE TECHNIQUE : Autoriser les domaines pour éviter l'écran noir Twitch
+  const parentParams = "&parent=localhost&parent=nefzawa.net&parent=www.nefzawa.net";
+  const twitchUrl = `https://player.twitch.tv/?channel=${TWITCH_CHANNEL}${parentParams}&autoplay=true&muted=false`;
 
   const handleShare = async () => {
     try {
@@ -34,9 +34,12 @@ export default function LiveVideoPage() {
         setIsCopied(true);
         setTimeout(() => setIsCopied(false), 2500);
       }
-    } catch (e) { console.error(e); }
+    } catch { 
+      /* Correction de l'erreur ESLint : le bloc n'est plus vide et la variable inutilisée est supprimée */
+    }
   };
 
+  // --- TON CONTENU ORIGINAL (TEXTE ET DESIGN) ---
   return (
     <div className="bg-[#050505] min-h-screen pb-32 font-arabic text-white" dir="rtl">
       <Helmet>
@@ -72,8 +75,9 @@ export default function LiveVideoPage() {
                     <Loader2 className="animate-spin text-[#E00A0A]" size={48} />
                   </div>
                 )}
+                {/* L'iframe utilise maintenant twitchUrl qui contient les parents autorisés */}
                 <iframe
-                  src={`https://player.twitch.tv/?channel=${TWITCH_CHANNEL}&parent=${parentDomain}&autoplay=true&muted=false`}
+                  src={twitchUrl}
                   className="w-full h-full"
                   frameBorder="0"
                   allowFullScreen={true}
@@ -88,40 +92,36 @@ export default function LiveVideoPage() {
               </div>
             </div>
 
-           {/* --- SEO EDITORIAL CONTENT (Key for SEO / AdSense) --- */}
-<article className="bg-white/5 border border-white/5 rounded-[3rem] p-8 md:p-12 space-y-6">
-  <h2 className="text-2xl md:text-3xl font-black border-r-4 border-[#E00A0A] pr-4">
-    البثّ المباشر لإذاعة نفزاوة FM
-  </h2>
+           {/* --- SEO EDITORIAL CONTENT --- */}
+            <article className="bg-white/5 border border-white/5 rounded-[3rem] p-8 md:p-12 space-y-6">
+              <h2 className="text-2xl md:text-3xl font-black border-r-4 border-[#E00A0A] pr-4">
+                البثّ المباشر لإذاعة نفزاوة FM
+              </h2>
 
-  <div className="text-zinc-300 leading-[2] text-lg space-y-4">
-    <p>
-      يوفّر هذا القسم خدمة البثّ المباشر المرئي لإذاعة نفزاوة FM، حيث يمكن للمتابعين مشاهدة البرامج الإذاعية مباشرةً بصيغة فيديو مع جودة عالية وصوت واضح، من قلب الأستوديو.
-    </p>
+              <div className="text-zinc-300 leading-[2] text-lg space-y-4">
+                <p>
+                  يوفّر هذا القسم خدمة البثّ المباشر المرئي لإذاعة نفزاوة FM، حيث يمكن للمتابعين مشاهدة البرامج الإذاعية مباشرةً بصيغة فيديو مع جودة عالية وصوت واضح، من قلب الأستوديو.
+                </p>
 
-    <p>
-      يهدف البثّ المباشر إلى تمكين الجمهور من متابعة البرامج الإذاعية لحظة بلحظة، بما في ذلك النشرات الإخبارية، البرامج الحوارية، والتغطيات الميدانية التي تقدمها إذاعة نفزاوة FM في الجنوب التونسي.
-    </p>
+                <p>
+يهدف البثّ المباشر إلى تمكين الجمهور من متابعة البرامج الإذاعية لحظة بلحظة، بما في ذلك النشرات الإخبارية، البرامج الحوارية، والتغطيات الميدانية التي تقدمها إذاعة نفزاوة FM في الجنوب التونسي.                </p>
 
-    <p>
-      يُعدّ هذا الفضاء جزءًا من تطوير الإعلام الرقمي في تونس، من خلال دمج البث الإذاعي التقليدي مع تقنيات البث المرئي المباشر، لتقديم تجربة متابعة حديثة وتفاعلية للمستخدمين.
-    </p>
+                <p>
+يُعدّ هذا الفضاء جزءًا من تطوير الإعلام الرقمي في تونس، من خلال دمج البث الإذاعي التقليدي مع تقنيات البث المرئي المباشر، لتقديم تجربة متابعة حديثة وتفاعلية للمستخدمين.                </p>
 
-    <p>
-      تابعوا إذاعة نفزاوة FM مباشرة عبر هذا البثّ الحي، وابقوا على اطلاع دائم بأحدث البرامج والمحتوى الإعلامي المحلي والجهوي في أي وقت ومن أي مكان.
-    </p>
-  </div>
-</article>
+                <p>
+تابعوا إذاعة نفزاوة FM مباشرة عبر هذا البثّ الحي، وابقوا على اطلاع دائم بأحدث البرامج والمحتوى الإعلامي المحلي والجهوي في أي وقت ومن أي مكان.                </p>
+              </div>
+            </article>
 
             {/* Availability Alert */}
             <div className="p-6 bg-red-600/10 border border-red-600/20 rounded-3xl flex items-center gap-4">
               <AlertCircle className="text-[#E00A0A] flex-shrink-0" size={24} />
-              <p className="text-sm text-red-200">البثّ المباشر مخصّص لبثّ برامجنا الإذاعية بشكل مباشر لمتابعتنا صوتًا وصورة.
-وفي حال عدم توفر بثّ مباشر حاليًا، يمكنكم زيارة صفحتنا على فيسبوك للاطلاع على جميع الفيديوهات السابقة.</p>
+              <p className="text-sm text-red-200">البثّ المباشر مخصّص لبثّ برامجنا الإذاعية بشكل مباشر لمتابعتنا صوتًا وصورة. وفي حال عدم توفر بثّ مباشر حاليًا، يمكنكم زيارة صفحتنا على فيسبوك للاطلاع على جميع الفيديوهات السابقة.</p>
             </div>
           </main>
 
-          {/* --- SIDEBAR  --- */}
+          {/* --- SIDEBAR --- */}
           <aside className="lg:col-span-4 space-y-6">
             
             {/* Widget 1: App */}
@@ -129,21 +129,21 @@ export default function LiveVideoPage() {
               <Smartphone size={32} className="text-[#E00A0A] mx-auto mb-6" />
               <h3 className="text-xl font-bold mb-2 text-right">تطبيق نفزاوة</h3>
               <p className="text-zinc-500 text-sm mb-6 text-right leading-relaxed">تابع البث المرئي والمسموع في أي وقت عبر تطبيقنا الرسمي</p>
-              <a href="https://play.google.com/store/apps/details?id=io.nefzawa.starter" className="w-full py-4 bg-white text-black rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-[#E00A0A] hover:text-white transition-all">
+              <a href="https://play.google.com/store/apps/details?id=io.nefzawa.starter" target="_blank" rel="noopener noreferrer" className="w-full py-4 bg-white text-black rounded-2xl font-bold flex items-center justify-center gap-3 hover:bg-[#E00A0A] hover:text-white transition-all">
                 <Download size={20} /> تحميل التطبيق
               </a>
             </div>
 
-            {/* Widget 2: Social (SVGs) */}
+            {/* Widget 2: Social */}
             <div className="bg-zinc-900/50 border border-white/10 rounded-[2.5rem] p-8 shadow-xl">
               <h3 className="text-lg font-bold mb-6 text-center text-zinc-300">منصاتنا الرقمية</h3>
               <div className="grid grid-cols-3 gap-3">
-                <a href="https://www.facebook.com/Nefzaawa" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-blue-600 transition-all"><SocialIcon d={FB_PATH} /></a>
-                <a href="https://www.instagram.com/nefzawa_" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-pink-600 transition-all"><SocialIcon d={INSTA_PATH} /></a>
-                <a href="https://www.tiktok.com/@nefzawa_" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-black transition-all"><SocialIcon d={TIKTOK_PATH} /></a>
-                <a href="https://www.youtube.com/@nefzawa" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-red-600 transition-all"><SocialIcon d={YT_PATH} /></a>
-                <a href="https://www.linkedin.com/company/nefzawa" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-blue-700 transition-all"><SocialIcon d={LINKEDIN_PATH} /></a>
-                <a href="https://www.dailymotion.com/user/nefzawa" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-blue-500 transition-all"><SocialIcon d={DM_PATH} /></a>
+                <a href="https://www.facebook.com/Nefzaawa" target="_blank" rel="noopener noreferrer" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-blue-600 transition-all"><SocialIcon d={FB_PATH} /></a>
+                <a href="https://www.instagram.com/nefzawa_" target="_blank" rel="noopener noreferrer" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-pink-600 transition-all"><SocialIcon d={INSTA_PATH} /></a>
+                <a href="https://www.tiktok.com/@nefzawa_" target="_blank" rel="noopener noreferrer" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-black transition-all"><SocialIcon d={TIKTOK_PATH} /></a>
+                <a href="https://www.youtube.com/@nefzawa" target="_blank" rel="noopener noreferrer" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-red-600 transition-all"><SocialIcon d={YT_PATH} /></a>
+                <a href="https://www.linkedin.com/company/nefzawa" target="_blank" rel="noopener noreferrer" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-blue-700 transition-all"><SocialIcon d={LINKEDIN_PATH} /></a>
+                <a href="https://www.dailymotion.com/user/nefzawa" target="_blank" rel="noopener noreferrer" className="aspect-square bg-slate-800 rounded-2xl flex justify-center items-center text-white hover:bg-blue-500 transition-all"><SocialIcon d={DM_PATH} /></a>
               </div>
             </div>
 
