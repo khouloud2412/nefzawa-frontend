@@ -34,6 +34,12 @@ const SocialIcon = ({ d, size = "w-5 h-5", colorClass = "group-hover:text-white"
 
 const cleanURL = (text) => text ? text.trim().replace(/\s+/g, '-') : "";
 
+const getCleanExcerpt = (content) => {
+  if (!content) return "";
+  const plainText = content.replace(/<[^>]*>?/gm, ''); // Enlever le HTML
+  return plainText.substring(0, 160) + "...";
+};
+
 // --- 4. COMPOSANT PRINCIPAL ---
 export default function ArticleDetailPage() {
   const { slug } = useParams();
@@ -86,20 +92,34 @@ export default function ArticleDetailPage() {
   if (loading) return <div className="py-40 text-center font-arabic animate-pulse text-slate-400">Loading...</div>;
   if (!article) return <div className="py-40 text-center font-arabic">Article Not Found</div>;
 
+    const shareImage = article.image?.startsWith('http') ? article.image : `https://www.nefzawa.net${article.image}`;
+  const cleanExcerpt = article.excerpt || getCleanExcerpt(article.content);
+
   const lang = (article.language === 'fr' || article.language === 'en') ? article.language : 'ar';
   const t = translations[lang];
   const displayCategory = categoryMap[lang]?.[article.category] || article.category;
 
   return (
     <div className={`bg-white min-h-screen pb-24 ${t.font} ${t.textAlign}`} dir={t.dir}>
-      <Helmet>
+    <Helmet>
         <title>{article.title} - Nefzawa</title>
-        <meta name="description" content={article.excerpt} />
+        <meta name="description" content={cleanExcerpt} />
+        
+        {/* Facebook Open Graph */}
         <meta property="og:title" content={article.title} />
-        <meta property="og:description" content={article.excerpt} />
-        <meta property="og:image" content={article.image} />
+        <meta property="og:description" content={cleanExcerpt} />
+        <meta property="og:image" content={shareImage} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
         <meta property="og:url" content={currentUrl} />
         <meta property="og:type" content="article" />
+        <meta property="og:locale" content={lang === 'ar' ? 'ar_AR' : 'fr_FR'} />
+
+        {/* Twitter Card */}
+        <meta name="twitter:card" content="summary_large_image" />
+        <meta name="twitter:title" content={article.title} />
+        <meta name="twitter:description" content={cleanExcerpt} />
+        <meta name="twitter:image" content={shareImage} />
       </Helmet>
       
       <div className="container mx-auto px-4 max-w-7xl">
