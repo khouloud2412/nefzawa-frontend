@@ -7,6 +7,7 @@ import ProjectsShowcase from "../components/common/ProjectsShowcase";
 import EditorialNews from "../components/common/EditorialNews";
 import NefzawaTV from "../components/common/NefzawaTV";
 import NewsCarousel from "../components/common/NewsCarousel";
+import AdBanner from "../components/ui/AdBanner";
 
 export default function HomePage() {
   return (
@@ -18,7 +19,9 @@ export default function HomePage() {
       {/* Hero  */}
       <HeroNefzawa />
       <AboutSection />
+       
       <NosProjets />
+      <AdBanner slot="6251692549" /> 
       <ProjectsShowcase />
       <EditorialNews
         sectionTitle="آخر"
@@ -38,6 +41,8 @@ export default function HomePage() {
         coloredPart="قبلي"
         btnText="اقرأ المقال"
       />
+       {/* On utilise ici ton bloc Multiplex pour finir en beauté */}
+      <AdBanner slot="2869639289" format="autorelaxed" /> 
     </>
   );
 }

@@ -6,6 +6,7 @@ import {
   Calendar, User, Share2, Check, ChevronRight, 
   Download, FileText, Music, Image as ImageIcon, Tag 
 } from 'lucide-react';
+import AdBanner from "../components/ui/AdBanner";
 
 // --- 1. DICTIONNAIRES ---
 const translations = {
@@ -151,6 +152,9 @@ export default function ArticleDetailPage() {
             <div className="article-content text-lg md:text-xl text-slate-800 leading-[2.1] space-y-6 mb-12" 
                  dangerouslySetInnerHTML={{ __html: article.content }} />
 
+                 {/* --- PUB MULTIPLEX (GRILLE) À LA FIN DU TEXTE --- */}
+<AdBanner slot="9271396105" format="autorelaxed" /> 
+
             <div className="space-y-12 mb-16">
               {article.audios?.length > 0 && (
                 <div className="bg-slate-50 p-6 rounded-3xl border border-slate-100 shadow-sm text-right">
@@ -244,6 +248,8 @@ export default function ArticleDetailPage() {
 
           <aside className="lg:w-1/3">
             <div className="sticky top-24 space-y-8">
+             {/* --- PUB SIDEBAR --- */}
+    <AdBanner slot="8177806289" format="rectangle" />
               <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-sm">
                 <h3 className={`flex items-center gap-3 text-xl font-black text-slate-900 mb-6 ${t.textAlign}`}>
                   <span className="w-2 h-8 bg-[#E00A0A] rounded-full"></span>

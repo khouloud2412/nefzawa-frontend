@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import HeaderSection from '../components/common/HeaderSection';
 import { Tv, Share2, Smartphone, Download, Check, AlertCircle, Loader2 } from 'lucide-react';
+import AdBanner from '../components/ui/AdBanner';
 
 // --- CONFIGURATION ---
 const TWITCH_CHANNEL = "nefzawa"; 
@@ -50,6 +51,8 @@ export default function LiveVideoPage() {
       <HeaderSection title="البثّ المباشر بالفيديو" subtitle="تابعنا صوتًا وصورةً" dark={true} />
 
       <div className="container mx-auto px-4 -mt-16 relative z-10">
+            {/* --- PUB LIVE TOP --- */}
+      <AdBanner slot="6718596405" />
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
           
           {/* --- MAIN PLAYER COLUMN --- */}
@@ -123,6 +126,9 @@ export default function LiveVideoPage() {
 
           {/* --- SIDEBAR --- */}
           <aside className="lg:col-span-4 space-y-6">
+
+             {/* --- PUB LIVE SIDEBAR --- */}
+          <AdBanner slot="8658364032" format="rectangle" />
             
             {/* Widget 1: App */}
             <div className="bg-zinc-900/50 border border-white/10 rounded-[2.5rem] p-8 text-center shadow-xl">

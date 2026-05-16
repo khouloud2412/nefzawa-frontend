@@ -3,6 +3,7 @@ import { Helmet } from 'react-helmet-async';
 import HeaderSection from '../components/common/HeaderSection';
 import { Play, Pause, Volume2, Radio, Share2, Smartphone, Check, Download } from 'lucide-react';
 import LiveAudio from '../assets/images/nefzawa-images/live-audio.webp';
+import AdBanner from '../components/ui/AdBanner';
 // --- ICONES RESEAUX SOCIAUX ---
 const SocialIcon = ({ d }) => (
 <svg className="w-6 h-6 fill-current" viewBox="0 0 24 24">
@@ -84,6 +85,8 @@ content="استمع إلى إذاعة نفزاوة FM مباشرة عبر الإ
 <HeaderSection title="راديو نفزاوة" subtitle="صوت الجنوب التونسي مباشرة من قبلي" dark={true} />
 
   <div className="container mx-auto px-4 -mt-16 relative z-10">
+     {/* --- PUB LIVE TOP (HORIZONTALE) --- */}
+      <AdBanner slot="6718596405" />
     <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
       
       {/* PLAYER CONSOLE */}
@@ -185,6 +188,7 @@ content="استمع إلى إذاعة نفزاوة FM مباشرة عبر الإ
 
       {/* SIDEBAR */}
       <div className="lg:col-span-4 space-y-6">
+        <AdBanner slot="8658364032" format="rectangle" />
         
         {/* Widget Téléchargement */}
         <div className="bg-zinc-900/50 border border-white/10 rounded-[2.5rem] p-8 text-center shadow-xl">
