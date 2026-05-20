@@ -17,11 +17,14 @@ import LiveVideoPage from "./pages/LiveVideoPage";
 import HistoryPage from "./pages/HistoryPage";
 import ContactPage from "./pages/ContactPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
+import NefzawaPrivacy from "./pages/NefzawaPrivacy";
+import ScrollToTop from "./components/common/ScrollToTop";
 
 function App() {
   return (
     <HelmetProvider>
-      <Router>
+      <Router>:
+        <ScrollToTop />
         <Routes>
           {/* Le Layout entoure toutes les pages pour garder la Navbar et le Footer fixes */}
           <Route path="/" element={<Layout />}>
@@ -47,6 +50,7 @@ function App() {
             <Route path="/HistoryPage" element={<HistoryPage />} />
             <Route path="/ContactPage" element={<ContactPage />} />
             <Route path="/search" element={<SearchResultsPage />} />
+            <Route path="/privacy-policy" element={<NefzawaPrivacy />} /> 
           </Route>
         </Routes>
       </Router>

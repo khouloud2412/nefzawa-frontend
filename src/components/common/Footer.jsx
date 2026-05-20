@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { Mail, Phone, MapPin } from "lucide-react";
 import logoNefzawa from "../../assets/images/nefzawa-images/logo-nefzawa.webp";
 import logoJTI from "../../assets/images/nefzawa-images/jti-logo.webp";
@@ -117,8 +118,19 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="text-center pt-6 text-slate-500 text-xs">
+      <div className="text-center pt-6 text-slate-500 text-xs flex flex-col md:flex-row justify-center items-center gap-4">
         <p>© 2026 نفزاوة - جميع الحقوق محفوظة</p>
+        
+        {/* Séparateur visible seulement sur desktop */}
+        <span className="hidden md:inline text-slate-700">|</span>
+        
+        {/* Lien vers la page politique de confidentialité */}
+       <Link 
+  to="/privacy-policy" 
+  className="hover:text-white transition-colors"
+>
+  سياسة الخصوصية
+</Link>
       </div>
     </footer>
   );
