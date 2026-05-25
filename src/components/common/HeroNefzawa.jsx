@@ -30,7 +30,7 @@ export default function HeroNefzawa() {
         />
       </div>
 
-      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 bg-[#e00a0a9e]">
+      <div className="relative z-10 flex flex-col items-center justify-center h-full text-center px-4 bg-[#e00a0a78]">
         <h1 className="text-5xl md:text-8xl font-black text-white mb-4 drop-shadow-[0_10px_20px_rgba(0,0,0,1)] font-arabic">
           NEFZAWA
         </h1>

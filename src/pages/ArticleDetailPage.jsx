@@ -64,11 +64,15 @@ export default function ArticleDetailPage() {
     } catch { /* Ignored */ }
   };
 
-  const shareToFacebook = () => {
-    const url = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(currentUrl)}`;
-    window.open(url, '_blank', 'width=600,height=400');
-  };
-
+ const shareToFacebook = () => {
+  const appId = "876781769994625";
+  const url = encodeURIComponent(currentUrl);
+  window.open(
+    `https://www.facebook.com/dialog/share?app_id=${appId}&display=popup&href=${url}`,
+    '_blank',
+    'width=600,height=400'
+  );
+};
   useEffect(() => {
     window.scrollTo(0, 0);
     const loadContent = async () => {
