@@ -1,42 +1,43 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from "react-helmet-async";
-import Layout from "./components/common/Layout"; 
-import HomePage from "./pages/HomePage";
-import NewsCategoryPage from "./pages/NewsCategoryPage";
-import ArticleDetailPage from "./pages/ArticleDetailPage";
-import NefzawaTVPage from "./pages/NefzawaTVPage";
-import AlouNefzawaPage from "./pages/AlouNefzawaPage";
-import RadioHistory from "./pages/RadioHistory";
-import RadioPresentation from "./pages/RadioPresentation";
-import MouwafakAalami from "./pages/MouwafakAalami";
-import VisionNefzawa from "./pages/VisionNefzawa";
-import MawathikThawabet from "./pages/MawathikThawabet";
-import OrganigramPage from "./pages/OrganigramPage";
-import LiveAudioPage from "./pages/LiveAudioPage";
-import LiveVideoPage from "./pages/LiveVideoPage";
-import HistoryPage from "./pages/HistoryPage";
-import ContactPage from "./pages/ContactPage";
-import SearchResultsPage from "./pages/SearchResultsPage";
-import NefzawaPrivacy from "./pages/NefzawaPrivacy";
-import ScrollToTop from "./components/common/ScrollToTop";
+
+// Layout et ScrollToTop
+import MainLayout from "@layouts/MainLayout";
+import ScrollToTop from "@main/components/common/ScrollToTop";
+
+// Pages nefzawa.net (Plateforme Main)
+import HomePage from "@main/pages/HomePage";
+import NewsCategoryPage from "@main/pages/NewsCategoryPage";
+import ArticleDetailPage from "@main/pages/ArticleDetailPage";
+import NefzawaTVPage from "@main/pages/NefzawaTVPage";
+import AlouNefzawaPage from "@main/pages/AlouNefzawaPage";
+import RadioHistory from "@main/pages/RadioHistory";
+import RadioPresentation from "@main/pages/RadioPresentation";
+import MouwafakAalami from "@main/pages/MouwafakAalami";
+import VisionNefzawa from "@main/pages/VisionNefzawa";
+import MawathikThawabet from "@main/pages/MawathikThawabet";
+import OrganigramPage from "@main/pages/OrganigramPage";
+import LiveAudioPage from "@main/pages/LiveAudioPage";
+import LiveVideoPage from "@main/pages/LiveVideoPage";
+import HistoryPage from "@main/pages/HistoryPage";
+import ContactPage from "@main/pages/ContactPage";
+import SearchResultsPage from "@main/pages/SearchResultsPage";
+import NefzawaPrivacy from "@main/pages/NefzawaPrivacy";
 
 function App() {
   return (
     <HelmetProvider>
-      <Router>:
+      <Router>
         <ScrollToTop />
         <Routes>
-          {/* Le Layout entoure toutes les pages pour garder la Navbar et le Footer fixes */}
-          <Route path="/" element={<Layout />}>
+          {/* Site principal : nefzawa.net */}
+          <Route path="/" element={<MainLayout />}>
             <Route index element={<HomePage />} />
-            
-            {/* Route dynamique pour les catégories */}
             <Route path="/news/:categoryName" element={<NewsCategoryPage />} />
-
-            {/* Route SEO-Friendly pour les articles : /article/categorie/titre-slug */}
-            <Route path="/article/:categoryName/:slug" element={<ArticleDetailPage />} />   
-
-            {/* Pages institutionnelles et média */}
+            <Route
+              path="/article/:categoryName/:slug"
+              element={<ArticleDetailPage />}
+            />
             <Route path="/nefzawa-tv" element={<NefzawaTVPage />} />
             <Route path="/alou-nefzawa" element={<AlouNefzawaPage />} />
             <Route path="/RadioHistory" element={<RadioHistory />} />
@@ -50,8 +51,10 @@ function App() {
             <Route path="/HistoryPage" element={<HistoryPage />} />
             <Route path="/ContactPage" element={<ContactPage />} />
             <Route path="/search" element={<SearchResultsPage />} />
-            <Route path="/privacy-policy" element={<NefzawaPrivacy />} /> 
+            <Route path="/privacy-policy" element={<NefzawaPrivacy />} />
           </Route>
+
+          {/* Les futures routes /city et /academie viendront ici plus tard */}
         </Routes>
       </Router>
     </HelmetProvider>
